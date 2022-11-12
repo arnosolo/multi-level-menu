@@ -1,15 +1,19 @@
 <script setup lang="ts">
 import type { MenuItemDoc, MenuItemProperty } from '@src/types/MenuItemDoc'
 import { generateRandomString } from '@src/utils/string'
+import { toRef } from 'vue'
 import MenuRow from '../MenuRow/index.vue'
 
 interface Props {
   menuItem: MenuItemDoc
+  index: number
 }
 const props = defineProps<Props>()
 
 const emit = defineEmits(['titleUpdate', 'updateShowChildren', 'addChild',
   'deleteNode', 'indexDecrease', 'indexIncrease'])
+
+const children = toRef(props.menuItem, 'children')
 
 const createNewChild = () => (
   {
@@ -68,13 +72,14 @@ function handleIndexDecrease(id: string, parentId: string) {
         </button>
       </div>
       <button
+        v-if="index > 0"
         py-2 px-2 rounded-md bg-gray-100 text-gray-700
         @click="emit('indexDecrease', menuItem.id, menuItem.parentId)"
       >
         Up
       </button>
       <p
-        v-if="menuItem.children"
+        v-if="children && children.length > 0"
         @click="handleUpdateShowChildren(menuItem.id, !menuItem.showChildren)"
       >
         {{ menuItem.showChildren ? '⬇️' : '➡️' }}
@@ -85,8 +90,9 @@ function handleIndexDecrease(id: string, parentId: string) {
       pl-4 pt-2 flex flex-col gap-2
     >
       <menu-row
-        v-for="child of menuItem.children" :key="child.id"
+        v-for="(child, i) of menuItem.children" :key="child.id"
         :menu-item="child"
+        :index="i"
         @title-update="handleTitleUpdate"
         @update-show-children="handleUpdateShowChildren"
         @add-child="handleAddChild"

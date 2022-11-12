@@ -182,8 +182,9 @@ initMenuItemsVal()
       </div>
       <ul flex flex-col gap-2 text-lg>
         <menu-row
-          v-for="menuItem of menuItems" :key="menuItem.id"
+          v-for="(menuItem, i) of menuItems" :key="menuItem.id"
           :menu-item="menuItem"
+          :index="i"
           @title-update="handleTitleUpdate"
           @update-show-children="handleUpdateShowChildren"
           @add-child="handleAddChild"
